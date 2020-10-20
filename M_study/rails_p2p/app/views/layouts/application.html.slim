@@ -1,0 +1,18 @@
+doctype html
+html
+  head
+    title RailsP2p
+    = csrf_meta_tags
+    = csp_meta_tag
+
+    = stylesheet_link_tag 'application', media: 'all'
+    = javascript_pack_tag 'application'
+
+  body
+
+    p = "Hi, #{current_user&.login_id}"
+
+    p.notice = notice
+    p.alert = alert
+
+    == yield

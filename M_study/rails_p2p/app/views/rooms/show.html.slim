@@ -1,0 +1,10 @@
+.Room
+  .room-name
+    | Room
+    span#room-id = @room.id
+
+  .remote-video
+    video#remote-video autoplay="" style="width: 500px; height: 500px;border: 1px solid #ddd;"
+
+  div
+    button#call-me call me

@@ -1,0 +1,15 @@
+- if @room_form.errors.any?
+  ul
+    - @room_form.errors.full_messages.each do |msg|
+      li = msg
+
+
+= form_for @room_form, url: rooms_path do |f|
+  ul
+    = f.fields_for :room_users do |ff|
+      li
+        = ff.check_box :selected
+        = ff.label :selected, ff.object.user.login_id
+        = ff.hidden_field :id
+        = ff.hidden_field :user_id
+  = f.submit
