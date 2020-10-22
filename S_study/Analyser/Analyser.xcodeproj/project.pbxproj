@@ -7,7 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3058D5A525406040008E1CDA /* multiPitchEstimateWithMelodia.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3058D5A325406040008E1CDA /* multiPitchEstimateWithMelodia.cpp */; };
 		30964F4E253F082000F6A449 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 30964F4D253F082000F6A449 /* main.cpp */; };
+		30964F56253F21C300F6A449 /* streamingMode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 30964F54253F21C300F6A449 /* streamingMode.cpp */; };
+		30964F59253F3B5B00F6A449 /* standardMode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 30964F57253F3B5B00F6A449 /* standardMode.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -23,8 +26,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3058D5A325406040008E1CDA /* multiPitchEstimateWithMelodia.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = multiPitchEstimateWithMelodia.cpp; sourceTree = "<group>"; };
+		3058D5A425406040008E1CDA /* multiPitchEstimateWithMelodia.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = multiPitchEstimateWithMelodia.hpp; sourceTree = "<group>"; };
 		30964F4A253F082000F6A449 /* Analyser */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Analyser; sourceTree = BUILT_PRODUCTS_DIR; };
 		30964F4D253F082000F6A449 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		30964F54253F21C300F6A449 /* streamingMode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = streamingMode.cpp; sourceTree = "<group>"; };
+		30964F55253F21C300F6A449 /* streamingMode.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = streamingMode.hpp; sourceTree = "<group>"; };
+		30964F57253F3B5B00F6A449 /* standardMode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = standardMode.cpp; sourceTree = "<group>"; };
+		30964F58253F3B5B00F6A449 /* standardMode.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = standardMode.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +67,12 @@
 			isa = PBXGroup;
 			children = (
 				30964F4D253F082000F6A449 /* main.cpp */,
+				3058D5A325406040008E1CDA /* multiPitchEstimateWithMelodia.cpp */,
+				3058D5A425406040008E1CDA /* multiPitchEstimateWithMelodia.hpp */,
+				30964F55253F21C300F6A449 /* streamingMode.hpp */,
+				30964F54253F21C300F6A449 /* streamingMode.cpp */,
+				30964F57253F3B5B00F6A449 /* standardMode.cpp */,
+				30964F58253F3B5B00F6A449 /* standardMode.hpp */,
 			);
 			path = Analyser;
 			sourceTree = "<group>";
@@ -120,6 +135,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				30964F4E253F082000F6A449 /* main.cpp in Sources */,
+				3058D5A525406040008E1CDA /* multiPitchEstimateWithMelodia.cpp in Sources */,
+				30964F59253F3B5B00F6A449 /* standardMode.cpp in Sources */,
+				30964F56253F21C300F6A449 /* streamingMode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -177,7 +195,10 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = /usr/local/include;
-				LIBRARY_SEARCH_PATHS = /usr/local/lib/usr/local/Cellar;
+				LIBRARY_SEARCH_PATHS = (
+					/usr/local/lib/usr/local/Cellar,
+					/usr/local/lib,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -243,7 +264,10 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = /usr/local/include;
-				LIBRARY_SEARCH_PATHS = /usr/local/lib/usr/local/Cellar;
+				LIBRARY_SEARCH_PATHS = (
+					/usr/local/lib/usr/local/Cellar,
+					/usr/local/lib,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
