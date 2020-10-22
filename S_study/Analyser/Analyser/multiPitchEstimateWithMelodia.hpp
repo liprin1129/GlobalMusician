@@ -24,16 +24,25 @@ private:
     int _frameSize = 2048;
     int _hopSize = 128;
     
-    std::vector<essentia::Real> _audioBuffer;
-    std::vector<std::vector<essentia::Real>> _multiPitch;
+    std::vector<essentia::Real> _inAudioBuffer;
+    std::vector<essentia::Real> _audioElBuffer;
+    std::vector<std::vector<essentia::Real>> _multiPitchEstimate;
+    std::vector<essentia::Real> _onset;
+    std::vector<essentia::Real> _duration;
+    std::vector<essentia::Real> _midiPitchEstimate;
     
-    essentia::streaming::Algorithm* _audioLoader;
-    essentia::streaming::Algorithm* _el;
-    essentia::streaming::Algorithm* _multiPitchEstimateMelodia;
+    std::vector<essentia::Real> _frameMultiPitchEstimate;
+    
+    essentia::standard::Algorithm* _audioLoader;
+    essentia::standard::Algorithm* _el;
+    essentia::standard::Algorithm* _multiPitchMelodiaEstimator;
+    essentia::standard::Algorithm* _midiPitchEstimator;
+    
+    //essentia::standard::Algorithm*
     
     void createAlgorithms();
     void connectAlgorithms();
-    void runNetwork();
+    void computeNetwork();
     
 public:
     MultiPitchEstimateWithMelodia(std::string audioFilename): _audioFilename(audioFilename) {
@@ -41,7 +50,7 @@ public:
         
         createAlgorithms();
         connectAlgorithms();
-        runNetwork();
+        computeNetwork();
     }
 };
 #endif /* hpcpExtractor_hpp */

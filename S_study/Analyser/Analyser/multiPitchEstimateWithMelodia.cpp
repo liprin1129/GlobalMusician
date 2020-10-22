@@ -9,7 +9,7 @@
 #include "multiPitchEstimateWithMelodia.hpp"
 
 void MultiPitchEstimateWithMelodia::createAlgorithms() {
-    essentia::streaming::AlgorithmFactory& factory = essentia::streaming::AlgorithmFactory::instance();
+    essentia::standard::AlgorithmFactory& factory = essentia::standard::AlgorithmFactory::instance();
     
     _audioLoader        = factory.create("MonoLoader",
                                "filename", _audioFilename,
@@ -19,28 +19,60 @@ void MultiPitchEstimateWithMelodia::createAlgorithms() {
     _el = factory.create("EqualLoudness",
                          "sampleRate", _sampleRate);
     
-    _multiPitchEstimateMelodia  = factory.create("MultiPitchMelodia",
-                                                 "sampleRate", _sampleRate,
+    _multiPitchMelodiaEstimator  = factory.create("MultiPitchMelodia",
+                                                 "sampleRate", (int)_sampleRate,
                                                  "frameSize", _frameSize,
                                                  "hopSize", _hopSize);
+    
+    _midiPitchEstimator = factory.create("PitchContourSegmentation",
+                                    "sampleRate", (int)_sampleRate,
+                                    "hopSize", _hopSize);
 }
 
 void MultiPitchEstimateWithMelodia::connectAlgorithms() {
-    _audioLoader->output("audio") >> _el->input("signal");
-    _el->output("signal") >> _multiPitchEstimateMelodia->input("signal");
-    _multiPitchEstimateMelodia->output("pitch") >> essentia::streaming::PoolConnector(_pool, "multipitch.melodia");
+    _audioLoader->output("audio").set(_inAudioBuffer);
+    _el->input("signal").set(_inAudioBuffer);
+    _el->output("signal").set(_audioElBuffer);
+    _multiPitchMelodiaEstimator->input("signal").set(_audioElBuffer);
+    _multiPitchMelodiaEstimator->output("pitch").set(_multiPitchEstimate);
+    
+    _midiPitchEstimator->input("pitch").set(_frameMultiPitchEstimate);
+    _midiPitchEstimator->input("signal").set(_inAudioBuffer);
+    _midiPitchEstimator->output("onset").set(_onset);
+    _midiPitchEstimator->output("duration").set(_duration);
+    _midiPitchEstimator->output("MIDIpitch").set(_midiPitchEstimate);
 }
 
 
-void MultiPitchEstimateWithMelodia::runNetwork() {
-    essentia::scheduler::Network n(_audioLoader);
-    n.run();
+void MultiPitchEstimateWithMelodia::computeNetwork() {
+    // Get audio buffer
+    _audioLoader->compute();
     
-    for(auto const& frame: _pool.value<std::vector<std::vector<essentia::Real>>>("multipitch.melodia")) {
-        for(auto const& pitches: frame) {
-            std::cout << pitches << std::endl;
+    // Process
+    _el->compute();
+    _multiPitchMelodiaEstimator->compute();
+    
+//    std::cout << "time   pitch [Hz]" << std::endl;
+//    for (int frameCount=0; frameCount < (int)_multiPitchEstimate.size(); frameCount++) {
+//        for (int pitchCount=0; pitchCount < (int)_multiPitchEstimate[frameCount].size(); pitchCount++) {
+//            std::fprintf(stdout, "%f S \t %f [Hz]\n", float(frameCount)*float(_hopSize)/float(_sampleRate), _multiPitchEstimate[frameCount][pitchCount]);
+//        }
+//    }
+    for (auto const& frame: _multiPitchEstimate) {
+        for (auto const& pitch: frame) {
+            _frameMultiPitchEstimate.push_back(pitch);
         }
+        _midiPitchEstimator->compute();
     }
     
-    n.clear();
+    for (int p=0; p < (int)_midiPitchEstimate.size(); p++) {
+        std::fprintf(stdout, "%f S \t -> %f S \t : %f\n", _onset[p], _duration[p], _midiPitchEstimate[p]);
+    }
+    
+    delete _audioLoader;
+    delete _el;
+    delete _multiPitchMelodiaEstimator;
+    delete _midiPitchEstimator;
+    
+    essentia::shutdown();
 }
