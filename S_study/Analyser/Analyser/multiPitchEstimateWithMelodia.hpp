@@ -21,11 +21,12 @@ private:
     essentia::Pool _pool;
 
     essentia::Real _sampleRate = 44100.0;
-    int _frameSize = 2048;
+    int _frameSize = 8000;//2048;
     int _hopSize = 128;
     
     std::vector<essentia::Real> _inAudioBuffer;
     std::vector<essentia::Real> _audioElBuffer;
+    std::vector<essentia::Real> _frame, _windowedFrame;
     std::vector<std::vector<essentia::Real>> _multiPitchEstimate;
     std::vector<essentia::Real> _onset;
     std::vector<essentia::Real> _duration;
@@ -34,6 +35,9 @@ private:
     std::vector<essentia::Real> _frameMultiPitchEstimate;
     
     essentia::standard::Algorithm* _audioLoader;
+    essentia::standard::Algorithm* _fc;
+    essentia::standard::Algorithm* _w;
+    
     essentia::standard::Algorithm* _el;
     essentia::standard::Algorithm* _multiPitchMelodiaEstimator;
     essentia::standard::Algorithm* _midiPitchEstimator;

@@ -92,7 +92,7 @@ int main(int argc, const char * argv[]) {
 
 #include <iostream>
 //#include "streamingMode.hpp"
-//#include "standardMode.hpp"
+#include "standardMode.hpp"
 #include "multiPitchEstimateWithMelodia.hpp"
 
 int main(int argc, const char * argv[]) {
