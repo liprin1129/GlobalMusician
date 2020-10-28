@@ -17,32 +17,46 @@
 class MultiPitchEstimateWithMelodia {
 private:
     std::string _audioFilename;
-    
-    essentia::Pool _pool;
+    std::vector<std::vector<essentia::Real>>  _pitch;
 
-    essentia::Real _sampleRate = 44100.0;
-    int _frameSize = 8000;//2048;
-    int _hopSize = 128;
+    // fundamental variables
+    essentia::Real _sampleRate          = 44100.;
+    int _frameSize                      = 2048;
+    int _hopSize                        = 128;
+    int _zeroPaddingFactor              = 4;
+    essentia::Real _referenceFrequency  = 55.0;
+    essentia::Real _binResolution       = 10.0;
+    int _numberHarmonics                = 10;
+
+    essentia::Real magnitudeThreshold   = 40;
+    essentia::Real magnitudeCompression = 1.0;
+    essentia::Real harmonicWeight       = 0.8;
+    essentia::Real minFrequency         = 80.0;
+    essentia::Real maxFrequency         = 1760.0;
     
-    std::vector<essentia::Real> _inAudioBuffer;
-    std::vector<essentia::Real> _audioElBuffer;
-    std::vector<essentia::Real> _frame, _windowedFrame;
-    std::vector<std::vector<essentia::Real>> _multiPitchEstimate;
-    std::vector<essentia::Real> _onset;
-    std::vector<essentia::Real> _duration;
-    std::vector<essentia::Real> _midiPitchEstimate;
+    // Derived variables
+    std::min(_numberHarmonics, floor(_sampleRate / maxFrequency));
+    int _numberHarmonicsMax             = std::min(_numberHarmonics, floor(_sampleRate / maxFrequency));
+    essentia::Real _centToHertzBase     = pow(2, _binResolution / 1200.0);
+    int _binsInSemitone                 = floor(100.0 / _binResolution);
+    int _binsInOctave;
+    essentia::Real _referenceTerm;
+    std::vector<essentia::Real> _centSpectrum;
+    int _numberBins;
     
-    std::vector<essentia::Real> _frameMultiPitchEstimate;
-    
-    essentia::standard::Algorithm* _audioLoader;
-    essentia::standard::Algorithm* _fc;
-    essentia::standard::Algorithm* _w;
-    
-    essentia::standard::Algorithm* _el;
-    essentia::standard::Algorithm* _multiPitchMelodiaEstimator;
-    essentia::standard::Algorithm* _midiPitchEstimator;
-    
-    //essentia::standard::Algorithm*
+    // Pre-processing
+    essentia::standard::Algorithm* _monoLoader;
+    essentia::standard::Algorithm* _frameCutter;
+    essentia::standard::Algorithm* _windowing;
+
+    // Spectral peaks and whitening
+    essentia::standard::Algorithm* _spectrum;
+    essentia::standard::Algorithm* _spectralPeaks;
+    essentia::standard::Algorithm* _spectralWhitening;
+
+    // Pitch salience function
+    essentia::standard::Algorithm* _pitchSalienceFunction;
+    essentia::standard::Algorithm* _pitchSalienceFunctionPeaks;
     
     void createAlgorithms();
     void connectAlgorithms();
