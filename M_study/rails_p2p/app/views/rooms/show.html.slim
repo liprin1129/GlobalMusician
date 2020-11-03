@@ -3,8 +3,19 @@
     | Room
     span#room-id = @room.id
 
-  .remote-video
-    video#remote-video autoplay="" style="width: 500px; height: 500px;border: 1px solid #ddd;"
+  #video-chat
+    h2 VideoChat
+    .remote-video
+      video#remote-video autoplay="" style="width: 200px; height: 200px;border: 1px solid #ddd;"
 
-  div
-    button#call-me call me
+    div
+      button#call-me call me
+
+  #text-chat
+    h2 TextChat
+    #sending-message
+      textarea rows="10" cols="20"
+      div
+        button#send-message send message
+    h3 Received Message
+    #received-messages style="border: 1px solid #ddd; height: 300px; width: 300px; overflow-y: auto;"

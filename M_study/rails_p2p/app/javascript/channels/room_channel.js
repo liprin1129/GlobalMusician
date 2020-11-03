@@ -36,35 +36,26 @@ const buildNewConnection = async (peerIdentifier, afterCandidatesMessage) => {
     document.getElementById('remote-video').srcObject = stream
   }
 
-  // const datachannel = peerConnection.createDataChannel('textDataChannel')
-
-  // datachannel.onopen = function (event) {
-  //     var readyState = datachannel.readyState;
-  //     if (readyState == "open") {
-  //       datachannel.send("Hello");
-  //     }
-  //   };
-
-
-  // datachannel.onmessage = (e) => {
-  //   console.log(e)
-  // }
-
   peers[peerIdentifier] = {
     connection: peerConnection,
-    // datachanel: datachannel,
+    datachannels: [],
   }
 
   return peerConnection
 }
 
 const receivedCallMe = (data) => {
-  debugger
   if (isExistConnection(data.from)) {
     return
   }
 
   buildNewConnection(data.from, 'Offer').then(peerConnection => {
+    // DataChannel
+    const datachannel = peerConnection.createDataChannel('textDataChannel')
+    peers[data.from].datachannels.push(datachannel)
+    // Received Event
+    datachannel.onmessage = appendMessageElem
+
     peerConnection.createOffer()
       .then((sdp) => peerConnection.setLocalDescription(sdp))
   })
@@ -76,6 +67,11 @@ const receivedOffer = (data) => {
   }
 
   buildNewConnection(data.from, 'Answer').then(peerConnection => {
+    peerConnection.ondatachannel = (e) => {
+      peers[data.from].datachannels.push(e.channel)
+      e.channel.onmessage = appendMessageElem
+    }
+
     peerConnection.setRemoteDescription(new RTCSessionDescription(data.sdp))
       .then(() => peerConnection.createAnswer())
       .then((sdp) => peerConnection.setLocalDescription(sdp))
@@ -118,4 +114,22 @@ window.onload = function () {
   document.getElementById('call-me').onclick = function () {
     connection.send({ message: 'CallMe' })
   }
+
+  document.getElementById('send-message').onclick = function (e) {
+    const data = JSON.stringify({
+      message: document.querySelector('#sending-message textarea').value
+    })
+    Object.values(peers).forEach(peer => {
+      peer.datachannels.forEach(datachannel => datachannel.send(data))
+    })
+  }
+}
+
+const appendMessageElem = (e) => {
+  const data = JSON.parse(e.data)
+  const el = document.createElement('p')
+  const txt = document.createTextNode(data.message)
+
+  el.appendChild(txt)
+  document.getElementById('received-messages').insertBefore(el, null)
 }
