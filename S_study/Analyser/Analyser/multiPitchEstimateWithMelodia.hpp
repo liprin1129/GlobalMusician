@@ -10,17 +10,20 @@
 #define hpcpExtractor_hpp
 
 #include <iostream>
+#include <algorithm>
+
+#include <essentia/essentiamath.h>
 #include <essentia/algorithmfactory.h>
 #include <essentia/streaming/algorithms/poolstorage.h>
 #include <essentia/scheduler/network.h>
 
-class MultiPitchEstimateWithMelodia {
+class MultiPitchEstimateWithKlapuri {
 private:
     std::string _audioFilename;
     std::vector<std::vector<essentia::Real>>  _pitch;
 
     // fundamental variables
-    essentia::Real _sampleRate          = 44100.;
+    essentia::Real _sampleRate          = 44800.;
     int _frameSize                      = 2048;
     int _hopSize                        = 128;
     int _zeroPaddingFactor              = 4;
@@ -34,12 +37,15 @@ private:
     essentia::Real minFrequency         = 80.0;
     essentia::Real maxFrequency         = 1760.0;
     
+    std::string _windowType = "hann";
+    int _maxSpectralPeaks = 100;
+    
     // Derived variables
-    std::min(_numberHarmonics, floor(_sampleRate / maxFrequency));
-    int _numberHarmonicsMax             = std::min(_numberHarmonics, floor(_sampleRate / maxFrequency));
-    essentia::Real _centToHertzBase     = pow(2, _binResolution / 1200.0);
-    int _binsInSemitone                 = floor(100.0 / _binResolution);
-    int _binsInOctave;
+    //min(_numberHarmonics, floor(_sampleRate / maxFrequency));
+    int _numberHarmonicsMax;//             = std::min(_numberHarmonics, floor(_sampleRate / maxFrequency));
+    essentia::Real _centToHertzBase;//     = pow(2, _binResolution / 1200.0);
+    int _binsInSemitone;//                 = floor(100.0 / _binResolution);
+    int _binsInOctave;//                   = 1200.0 / _binResolution;
     essentia::Real _referenceTerm;
     std::vector<essentia::Real> _centSpectrum;
     int _numberBins;
@@ -58,17 +64,29 @@ private:
     essentia::standard::Algorithm* _pitchSalienceFunction;
     essentia::standard::Algorithm* _pitchSalienceFunctionPeaks;
     
+    int frequencyToCentBin(essentia::Real frequency);
+    essentia::Real getWeight(int centBin, int harmonicNumber);
+    
     void createAlgorithms();
     void connectAlgorithms();
     void computeNetwork();
     
 public:
-    MultiPitchEstimateWithMelodia(std::string audioFilename): _audioFilename(audioFilename) {
+    MultiPitchEstimateWithKlapuri(std::string audioFilename): _audioFilename(audioFilename) {
+        _numberHarmonicsMax = floor(_sampleRate / maxFrequency);
+        _numberHarmonicsMax = std::min(_numberHarmonics, _numberHarmonicsMax);
+        _centToHertzBase    = pow(2, _binResolution / 1200.0);
+        _binsInSemitone     = floor(100.0 / _binResolution);
+        _binsInOctave       = 1200.0 / _binResolution;
+        _referenceTerm      = 0.5 - _binsInOctave * log2(_referenceFrequency);
+        _numberBins         = frequencyToCentBin(_sampleRate/2);
+        _centSpectrum.resize(_numberBins);
+        
         essentia::init();
         
         createAlgorithms();
         connectAlgorithms();
-        computeNetwork();
+        //computeNetwork();
     }
 };
 #endif /* hpcpExtractor_hpp */

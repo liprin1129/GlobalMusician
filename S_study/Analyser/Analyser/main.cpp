@@ -102,6 +102,6 @@ int main(int argc, const char * argv[]) {
 //    std::cout << a1 << ", " << a2 << std::endl;
 //    StreamingMode strm(a1, a2);
 //    StandardMode stdm(a1, a2);
-    MultiPitchEstimateWithMelodia mpe(a1);
+    MultiPitchEstimateWithKlapuri mpe(a1);
     return 0;
 }
