@@ -92,16 +92,26 @@ int main(int argc, const char * argv[]) {
 
 #include <iostream>
 //#include "streamingMode.hpp"
-#include "standardMode.hpp"
-#include "multiPitchEstimateWithMelodia.hpp"
+//#include "standardMode.hpp"
+//#include "multiPitchEstimateWithMelodia.hpp"
+#include "audioMixer.hpp"
 
 int main(int argc, const char * argv[]) {
-    std::string a1(argv[1]);
+    std::vector<std::string> argVec;
+    std::cout << "1\n";
+    for (int i=1; i<argc; i++) {
+//        std::cout << i << std::endl;
+        argVec.push_back(std::string(argv[i]));
+    }
+    
 //    std::string a2(argv[2]);
     
 //    std::cout << a1 << ", " << a2 << std::endl;
 //    StreamingMode strm(a1, a2);
 //    StandardMode stdm(a1, a2);
-    MultiPitchEstimateWithKlapuri mpe(a1);
+//    MultiPitchEstimateWithKlapuri mpe(a1);
+    std::cout << "mix audio\n";
+    AudioMixer am(argVec);
+    
     return 0;
 }
