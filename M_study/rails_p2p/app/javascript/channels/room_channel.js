@@ -1,20 +1,20 @@
 import consumer from "./consumer"
 
-window.peers = {}
+window.peers = {};
+
+// init media
+(function () {
+  navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
+    window.localStream = stream
+  })
+}())
 
 const isExistConnection = (peerIdentifier) => {
   return Object.keys(peers).includes(peerIdentifier)
 }
 
 const buildNewConnection = async (peerIdentifier, afterCandidatesMessage) => {
-  const configuration = {
-    offerToReceiveVideo: true
-  }
-  const peerConnection = new RTCPeerConnection(configuration)
-
-  if (!window.localStream) {
-    window.localStream = await navigator.mediaDevices.getUserMedia({ video: true })
-  }
+  const peerConnection = new RTCPeerConnection()
 
   window.localStream.getTracks().forEach(track => {
     peerConnection.addTrack(track, window.localStream);
