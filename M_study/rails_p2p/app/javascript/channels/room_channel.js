@@ -4,8 +4,19 @@ window.peers = {};
 
 // init media
 (function () {
+  const audioContext = new window.AudioContext()
+
   navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
     window.localStream = stream
+    const audioSource = audioContext.createMediaStreamSource(stream)
+    const audioProcessor = audioContext.createScriptProcessor(4096, 1, 1)
+
+    audioSource.connect(audioProcessor)
+    audioProcessor.connect(audioContext.destination)
+
+    audioProcessor.onaudioprocess = (e) => {
+      console.log(e.inputBuffer.getChannelData(0))
+    }
   })
 }())
 
