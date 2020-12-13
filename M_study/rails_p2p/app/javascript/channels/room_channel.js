@@ -15,7 +15,9 @@ window.peers = {};
     audioProcessor.connect(audioContext.destination)
 
     audioProcessor.onaudioprocess = (e) => {
-      console.log(e.inputBuffer.getChannelData(0))
+      if (window.recording) {
+        window.connection.perform("recording", { buffer: e.inputBuffer.getChannelData(0) })
+      }
     }
   })
 }())
@@ -42,7 +44,7 @@ const buildNewConnection = async (peerIdentifier, afterCandidatesMessage) => {
   }
 
   peerConnection.ontrack = function(e) {
-    let track = e.track
+    // let track = e.track
     let stream = e.streams[0]
     document.getElementById('remote-video').srcObject = stream
   }
@@ -133,6 +135,14 @@ window.onload = function () {
     Object.values(peers).forEach(peer => {
       peer.datachannels.forEach(datachannel => datachannel.send(data))
     })
+  }
+
+  document.getElementById('start-recording').onclick = function (e) {
+    window.recording = true
+  }
+  document.getElementById('stop-recording').onclick = function (e) {
+    window.recording = false
+    connection.perform('stop_recording')
   }
 }
 

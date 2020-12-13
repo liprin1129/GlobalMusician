@@ -47,3 +47,5 @@ gem 'devise'
 gem 'slim'
 
 gem 'puma'
+
+gem 'wavefile'
