@@ -7,7 +7,7 @@ class RoomChannel < ApplicationCable::Channel
 
     @room = room_user.room
 
-    stream_for broadcasting_for(@room)
+    stream_for @room
     stream_from broadcasting_for(room_user.solo_broadcasting_name)
   end
 
@@ -30,8 +30,19 @@ class RoomChannel < ApplicationCable::Channel
     end
   end
 
-  def recording(data)
-    file_path = Rails.root.join("audio/#{@room.id}/#{current_user.id}.wav")
+  def start_recording
+    @room.start_recording
+    broadcast_to @room, { message: 'StartedRecording' }
+  end
+
+  def end_recording
+    broadcast_to @room, { message: 'EndedRecording' }
+  end
+
+  def write_audio(data)
+    @now_recording ||= @room.now_recording
+
+    file_path = Rails.root.join("audio/#{@room.id}/#{@now_recording.id}/#{current_user.id}.wav")
     FileUtils.mkdir_p(file_path.dirname)
 
     @writer ||= WaveFile::Writer.new(file_path.to_s, WaveFile::Format.new(:mono, :pcm_16, 44100))
@@ -39,7 +50,8 @@ class RoomChannel < ApplicationCable::Channel
     @writer.write(buffer)
   end
 
-  def stop_recording
+  def close_audio
     @writer.close
+    @now_recording = nil
   end
 end

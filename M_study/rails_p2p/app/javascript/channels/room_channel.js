@@ -4,21 +4,8 @@ window.peers = {};
 
 // init media
 (function () {
-  const audioContext = new window.AudioContext()
-
   navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
     window.localStream = stream
-    const audioSource = audioContext.createMediaStreamSource(stream)
-    const audioProcessor = audioContext.createScriptProcessor(4096, 1, 1)
-
-    audioSource.connect(audioProcessor)
-    audioProcessor.connect(audioContext.destination)
-
-    audioProcessor.onaudioprocess = (e) => {
-      if (window.recording) {
-        window.connection.perform("recording", { buffer: e.inputBuffer.getChannelData(0) })
-      }
-    }
   })
 }())
 
@@ -96,6 +83,30 @@ const receivedAnswer = (data) => {
   peerConnection.setRemoteDescription(new RTCSessionDescription(data.sdp))
 }
 
+const receivedStartedRecording = (data) => {
+  window.recording = true
+  const audioContext = new window.AudioContext()
+
+  const audioSource = audioContext.createMediaStreamSource(window.localStream)
+  const audioProcessor = audioContext.createScriptProcessor(4096, 1, 1)
+
+  audioSource.connect(audioProcessor)
+  audioProcessor.connect(audioContext.destination)
+
+  audioProcessor.onaudioprocess = (e) => {
+    if (window.recording) {
+      window.connection.perform("write_audio", { buffer: e.inputBuffer.getChannelData(0) })
+    }
+  }
+
+  window.audioContext = audioContext
+}
+
+const receivedEndedRecording = (data) => {
+  window.audioContext.close()
+  window.connection.perform('close_audio')
+}
+
 window.onload = function () {
   window.connection = consumer.subscriptions.create({
     channel: "RoomChannel",
@@ -116,6 +127,8 @@ window.onload = function () {
         'CallMe',
         'Offer',
         'Answer',
+        'StartedRecording',
+        'EndedRecording',
       ]
 
       if (messageTypes.includes(data.message)) {
@@ -138,11 +151,11 @@ window.onload = function () {
   }
 
   document.getElementById('start-recording').onclick = function (e) {
-    window.recording = true
+    // TODO: rename method name
+    window.connection.perform('start_recording')
   }
   document.getElementById('stop-recording').onclick = function (e) {
-    window.recording = false
-    connection.perform('stop_recording')
+    window.connection.perform('end_recording')
   }
 }
 
