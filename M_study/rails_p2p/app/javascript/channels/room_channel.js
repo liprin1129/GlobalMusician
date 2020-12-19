@@ -38,7 +38,6 @@ const buildNewConnection = async (peerIdentifier, afterCandidatesMessage) => {
 
   peers[peerIdentifier] = {
     connection: peerConnection,
-    datachannels: [],
   }
 
   return peerConnection
@@ -50,12 +49,6 @@ const receivedCallMe = (data) => {
   }
 
   buildNewConnection(data.from, 'Offer').then(peerConnection => {
-    // DataChannel
-    const datachannel = peerConnection.createDataChannel('textDataChannel')
-    peers[data.from].datachannels.push(datachannel)
-    // Received Event
-    datachannel.onmessage = appendMessageElem
-
     peerConnection.createOffer()
       .then((sdp) => peerConnection.setLocalDescription(sdp))
   })
@@ -67,11 +60,6 @@ const receivedOffer = (data) => {
   }
 
   buildNewConnection(data.from, 'Answer').then(peerConnection => {
-    peerConnection.ondatachannel = (e) => {
-      peers[data.from].datachannels.push(e.channel)
-      e.channel.onmessage = appendMessageElem
-    }
-
     peerConnection.setRemoteDescription(new RTCSessionDescription(data.sdp))
       .then(() => peerConnection.createAnswer())
       .then((sdp) => peerConnection.setLocalDescription(sdp))
@@ -114,7 +102,6 @@ window.onload = function () {
   }, {
     connected() {
       // Called when the subscription is ready for use on the server
-      console.log("Connected to the room!");
     },
 
     disconnected() {
@@ -140,18 +127,7 @@ window.onload = function () {
   document.getElementById('call-me').onclick = function () {
     connection.send({ message: 'CallMe' })
   }
-
-  document.getElementById('send-message').onclick = function (e) {
-    const data = JSON.stringify({
-      message: document.querySelector('#sending-message textarea').value
-    })
-    Object.values(peers).forEach(peer => {
-      peer.datachannels.forEach(datachannel => datachannel.send(data))
-    })
-  }
-
   document.getElementById('start-recording').onclick = function (e) {
-    // TODO: rename method name
     window.connection.perform('start_recording')
   }
   document.getElementById('stop-recording').onclick = function (e) {
