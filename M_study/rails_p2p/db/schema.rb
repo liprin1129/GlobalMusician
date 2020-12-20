@@ -12,16 +12,19 @@
 
 ActiveRecord::Schema.define(version: 2020_12_20_124351) do
 
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "recordings", force: :cascade do |t|
-    t.integer "room_id"
+    t.bigint "room_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["room_id"], name: "index_recordings_on_room_id"
   end
 
   create_table "room_users", force: :cascade do |t|
-    t.integer "user_id"
-    t.integer "room_id"
+    t.bigint "user_id"
+    t.bigint "room_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "ws_connection_identifier"
@@ -47,8 +50,8 @@ ActiveRecord::Schema.define(version: 2020_12_20_124351) do
   end
 
   create_table "users_recordings", force: :cascade do |t|
-    t.integer "user_id"
-    t.integer "recording_id"
+    t.bigint "user_id"
+    t.bigint "recording_id"
     t.integer "recording_status"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
