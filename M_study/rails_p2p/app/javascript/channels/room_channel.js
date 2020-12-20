@@ -91,8 +91,9 @@ const receivedStartedRecording = (data) => {
 }
 
 const receivedEndedRecording = (data) => {
-  window.audioContext.close()
-  window.connection.perform('close_audio')
+  window.audioContext.close().then(() => {
+    window.connection.perform('close_audio')
+  })
 }
 
 window.onload = function () {
