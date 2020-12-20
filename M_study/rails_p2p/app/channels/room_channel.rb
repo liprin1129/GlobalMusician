@@ -31,7 +31,11 @@ class RoomChannel < ApplicationCable::Channel
   end
 
   def start_recording
-    @room.start_recording
+    recording = @room.start_recording
+    @room.room_users.online.map do |r_user|
+      recording.users_recordings.create(user: r_user.user)
+    end
+
     broadcast_to @room, { message: 'StartedRecording' }
   end
 
@@ -40,9 +44,10 @@ class RoomChannel < ApplicationCable::Channel
   end
 
   def write_audio(data)
-    @now_recording ||= @room.now_recording
+    @recording ||= @room.now_recording
+    @users_recording ||= @recording.users_recordings.find_by!(user: current_user)
 
-    file_path = Rails.root.join("audio/#{@room.id}/#{@now_recording.id}/#{current_user.id}.wav")
+    file_path = Rails.root.join("audio/#{@room.id}/#{@recording.id}/#{current_user.id}.wav")
     FileUtils.mkdir_p(file_path.dirname)
 
     @writer ||= WaveFile::Writer.new(file_path.to_s, WaveFile::Format.new(:mono, :pcm_16, 44100))
@@ -52,6 +57,14 @@ class RoomChannel < ApplicationCable::Channel
 
   def close_audio
     @writer.close
-    @now_recording = nil
+    @users_recording.close!
+    clear_recording_models
+  end
+
+  private
+
+  def clear_recording_models
+    @recording = nil
+    @users_recording = nil
   end
 end
