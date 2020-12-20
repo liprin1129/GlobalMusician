@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_12_14_132613) do
+ActiveRecord::Schema.define(version: 2020_12_20_124351) do
 
   create_table "recordings", force: :cascade do |t|
     t.integer "room_id"
@@ -44,6 +44,16 @@ ActiveRecord::Schema.define(version: 2020_12_14_132613) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["login_id"], name: "index_users_on_login_id", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  end
+
+  create_table "users_recordings", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "recording_id"
+    t.integer "recording_status"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["recording_id"], name: "index_users_recordings_on_recording_id"
+    t.index ["user_id"], name: "index_users_recordings_on_user_id"
   end
 
 end
