@@ -41,13 +41,15 @@ class RoomChannel < ApplicationCable::Channel
 
   def end_recording
     broadcast_to @room, { message: 'EndedRecording' }
+
+    SynthesizeAudioJob.perform_later(@recording.id)
   end
 
   def write_audio(data)
     @recording ||= @room.now_recording
     @users_recording ||= @recording.users_recordings.find_by!(user: current_user)
 
-    file_path = Rails.root.join("audio/#{@room.id}/#{@recording.id}/#{current_user.id}.wav")
+    file_path = @recording.store_path.join(@users_recording.wav_file_name)
     FileUtils.mkdir_p(file_path.dirname)
 
     @writer ||= WaveFile::Writer.new(file_path.to_s, WaveFile::Format.new(:mono, :pcm_16, 44100))
