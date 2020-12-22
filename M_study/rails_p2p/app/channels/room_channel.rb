@@ -32,7 +32,7 @@ class RoomChannel < ApplicationCable::Channel
 
   def start_recording
     recording = @room.start_recording
-    @room.room_users.online.map do |r_user|
+    @room.room_users.reload.online.map do |r_user|
       recording.users_recordings.create(user: r_user.user)
     end
 
