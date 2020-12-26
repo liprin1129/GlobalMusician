@@ -1,4 +1,6 @@
 class RoomsController < ApplicationController
+  # todo room member validate to show / recording_audio
+
   def new
     @room_form = RoomForm.new(Room.new, current_user)
   end
@@ -19,6 +21,13 @@ class RoomsController < ApplicationController
 
   def show
     @room = Room.find(params[:id])
+  end
+
+  def recording_audio
+    room = Room.find(params[:room_id])
+    recording = room.recordings.find(params[:recording_id])
+
+    send_data File.read(recording.synthesize_file_path)
   end
 
   private

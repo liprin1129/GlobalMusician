@@ -1,16 +1,24 @@
-.Room
+.room
   .room-name
     | Room
     span#room-id = @room.id
 
   #video-chat
-    h2 Video
     .remote-video
-      video#remote-video autoplay="" style="width: 200px; height: 200px;border: 1px solid #ddd;"
+      video#remote-video autoplay="" style="width: 500px; height: 400px;border: 1px solid #ddd;"
 
     div
-      button#call-me call me
-    div
-      button#start-recording start recording
-    div
-      button#stop-recording stop recording
+      button#call-me call
+      button#start-recording start
+      button#stop-recording stop
+
+  #recordings
+    | Recordings
+    .recording-list
+
+sass:
+  .room
+    width: 500px;
+    margin: 0 auto;
+  div
+    margin: 18px 0;

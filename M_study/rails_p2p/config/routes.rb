@@ -4,5 +4,7 @@ Rails.application.routes.draw do
 
   root to: "dummy#index"
 
-  resources :rooms, only: %i[new create show]
+  resources :rooms, only: %i[new create show] do
+    get :recording_audio, :member
+  end
 end

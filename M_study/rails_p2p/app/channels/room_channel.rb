@@ -68,5 +68,6 @@ class RoomChannel < ApplicationCable::Channel
   def clear_recording_models
     @recording = nil
     @users_recording = nil
+    @writer = nil
   end
 end

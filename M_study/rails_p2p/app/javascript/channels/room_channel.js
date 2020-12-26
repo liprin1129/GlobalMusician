@@ -90,7 +90,25 @@ const receivedStartedRecording = (data) => {
   window.audioContext = audioContext
 }
 
+const receivedReloadRecordings = (data) => {
+  const ul = document.querySelector('.recording-list')
+
+  data.recordings.forEach(recording => {
+    const li = document.createElement('li')
+    const audio = document.createElement('audio')
+
+    audio.setAttribute('src', recording.file_url)
+    audio.setAttribute('controls', '')
+
+    li.appendChild(document.createTextNode(recording.file_url))
+    li.appendChild(audio)
+
+    ul.insertBefore(li, null)
+  })
+}
+
 const receivedEndedRecording = (data) => {
+  console.log('received ended recording!')
   window.audioContext.close().then(() => {
     window.connection.perform('close_audio')
   })
@@ -117,6 +135,7 @@ window.onload = function () {
         'Answer',
         'StartedRecording',
         'EndedRecording',
+        'ReloadRecordings',
       ]
 
       if (messageTypes.includes(data.message)) {

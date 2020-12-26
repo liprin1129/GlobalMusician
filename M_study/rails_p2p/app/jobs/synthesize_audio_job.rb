@@ -1,4 +1,6 @@
 class SynthesizeAudioJob < ApplicationJob
+  include Rails.application.routes.url_helpers
+
   queue_as :default
 
   def perform(recording_id)
@@ -19,7 +21,7 @@ class SynthesizeAudioJob < ApplicationJob
     RoomChannel.broadcast_to recording.room, {
       message: 'ReloadRecordings',
       recordings: [
-        { created_at: Time.now, file_url: '1.wav' }
+        { created_at: Time.now, file_url: room_recording_audio_path(recording.room, recording_id: recording.id) }
       ]
     }
   end
