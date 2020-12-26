@@ -35,8 +35,12 @@ private:
     std::vector<essentia::Real> monoOutput;
     
 public:
-    AudioMixer(std::vector<std::string> inFileNames) {
-        audioFileNames = inFileNames;
+    AudioMixer(std::vector<std::string> argv) {
+        outputFileName = argv.back();
+        std::cout << outputFileName << std::endl;
+        argv.pop_back();
+        audioFileNames = argv;
+        //audioFileNames = std::vector<std::string>(argv.begin()+1, argv.begin()+2);
         count = static_cast<int>(audioFileNames.size());
         
         // Prepare audio buffer in audio vector

@@ -21,7 +21,7 @@ void AudioMixer::createAlgorithms() {
                                "type", "mix");
     
     monoWriter = factory.create("MonoWriter",
-                                "filename", "output.wav");
+                                "filename", outputFileName);
 }
 
 void AudioMixer::connectAlgorithms() {
@@ -54,14 +54,14 @@ void AudioMixer::computeAlgorithms() {
         
         stereoBuffer.push_back(ss);
     }
-    
+//    std::cout << "ok" << std::endl;
     monoMixer->compute();
-    
+//    std::cout << "ok2" << std::endl;
 //    for (auto i: monoOutput) {
 //        std::cout << i << std::endl;
 //    }
     monoWriter->compute();
-    
+//    std::cout << "ok3" << std::endl;
     for (int i=0; i<count; i++) {
         delete audioVec[i];
     }
